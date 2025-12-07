@@ -8,6 +8,7 @@
 
 typedef struct _node {
     PATIENT *patient;
+    int level;
     struct _node *next;
     struct _node *prev;
 } NODE;
@@ -31,13 +32,14 @@ bool is_queue_empty(QUEUE *queue){
     return queue->size == 0;
 }
 
-bool enqueue(QUEUE *queue, PATIENT *patient){
+bool enqueue(QUEUE *queue, PATIENT *patient, int level){
     if(queue == NULL || queue->size >= DEFAULT_MAX_SIZE){
         return false;
     }
 
     NODE *n = (NODE*) calloc(1, sizeof(NODE));
     n->patient = patient;
+    n->level = level;
     n->next = NULL;
     
     if(is_queue_empty(queue)){
@@ -74,9 +76,17 @@ PATIENT* dequeue(QUEUE *queue){
 
     return p;
 }
+
+int get_next_level(QUEUE *queue){
+    if(is_queue_empty(queue) || queue->head == NULL){
+        return 0;
+    }
+
+    return queue->head->level;
+}
  
 void print_queue(QUEUE *queue){
-    if(is_queue_empty(queue)){
+    if(is_queue_empty(queue)) {
         printf("(Sem pacientes na fila)\n");
         return;
     }

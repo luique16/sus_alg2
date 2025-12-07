@@ -29,8 +29,7 @@ void add_patient_list(LIST *list){
         set_patient_id(patient, get_patient_id(last) + 1);
     }
 
-    HISTORY *history = init_history();
-    set_patient_history(patient, history);
+    un_hospitalize(patient);
 
     add_patient(list, patient);
 }
@@ -87,8 +86,7 @@ void search_patient_by_name_list(LIST *list){
 
     printf("ID: %d\n", get_patient_id(patient));
     printf("Nome: %s\n", get_patient_name(patient));
-    printf("Histórico:\n");
-    print_history(get_patient_history(patient));
+    printf("Status: %s\n", is_hospitalized(patient) ? "Internado" : "Externo");
 }
 
 void search_patient_by_id_list(LIST *list){
@@ -110,8 +108,7 @@ void search_patient_by_id_list(LIST *list){
 
     printf("ID: %d\n", get_patient_id(patient));
     printf("Nome: %s\n", get_patient_name(patient));
-    printf("Histórico:\n");
-    print_history(get_patient_history(patient));
+    printf("Status: %s\n", is_hospitalized(patient) ? "Internado" : "Externo");
 }
 
 void list_menu(LIST *list){

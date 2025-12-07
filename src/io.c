@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "../include/io.h"
 #include "../include/list.h"
 #include "../include/queue.h"
 #include "../include/patient.h"
-#include "../include/history.h"
 
 #define MAX_LINE_SIZE 1000
 
@@ -31,9 +29,10 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
         int size = get_queue_size(queue);
 
         for (int i = 0; i < size; i++) {
+            int level = get_next_level(queue);
             PATIENT *patient = dequeue(queue);
 
-            fprintf(queue_file, "\n  %d", get_patient_id(patient));
+            fprintf(queue_file, "\n  [%d, %d]", get_patient_id(patient), level);
 
             if (i < size - 1) {
                 fprintf(queue_file, ",");
@@ -59,19 +58,18 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
             PATIENT *patient = get_patient_by_id(list, id);
 
             char* name = get_patient_name(patient);
-            char* history = save_history(get_patient_history(patient));
+            bool hospitalized = is_hospitalized(patient);
 
             fprintf(list_file, "\n  {\n");
             fprintf(list_file, "    \"id\": %d,\n", get_patient_id(patient));
             fprintf(list_file, "    \"name\": \"%s\",\n", name);
-            fprintf(list_file, "    \"history\": \"%s\"\n", history);
+            fprintf(list_file, "    \"hospitalized\": %d\n", hospitalized);
             fprintf(list_file, "  }");
 
             if (i < size - 1) {
                 fprintf(list_file, ",");
             }
 
-            free(history);
             remove_patient(list, id);
         }
 
@@ -107,9 +105,10 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
         int id;
         char name[MAX_LINE_SIZE];
         char history[MAX_LINE_SIZE];
+        int hospitalized;
 
         for (int i = 0; i < 3; i++) {
-            char field[10];
+            char field[20];
 
             fgets(line, MAX_LINE_SIZE, list_file);
             sscanf(line, "  \"%[^\"]\": ", field);
@@ -118,21 +117,22 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
                 sscanf(line, "  \"id\": %d,", &id);
             } else if (strcmp(field, "name") == 0) {
                 sscanf(line, "  \"name\": \"%[^\"]\",", name);
-            } else if (strcmp(field, "history") == 0) {
-                int empty = sscanf(line, "  \"history\": \"%[^\"]\"", history);
+            } else if (strcmp(field, "hospitalized") == 0) {
+                int empty = sscanf(line, "  \"hospitalized\": %d,", &hospitalized);
                 if (empty == 0) {
                     history[0] = '\0';
                 }
             }
         }
 
-        HISTORY *history_struct = init_history();
-        load_history(history_struct, history);
-
         PATIENT *patient = init_patient();
-        set_patient_history(patient, history_struct);
         set_patient_id(patient, id);
         set_patient_name(patient, name);
+        if (hospitalized == 1) {
+            hospitalize(patient);
+        } else {
+            un_hospitalize(patient);
+        }
 
         add_patient(*list, patient);
 
@@ -173,6 +173,7 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
 
     while (!complete) {
         int id;
+        int level;
 
         fgets(line, 100, queue_file);
 
@@ -181,12 +182,12 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
             break;
         }
 
-        sscanf(line, "  %d,", &id);
+        sscanf(line, "  [%d, %d],", &id, &level);
 
         PATIENT *patient = get_patient_by_id(*list, id);
 
         if (patient != NULL) {
-            enqueue(*queue, patient);
+            enqueue(*queue, patient, level);
         }
     }
 

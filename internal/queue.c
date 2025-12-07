@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "../include/list.h"
+#include "../include/io.h"
 #include "../include/queue.h"
 
 #include "patient.c"
@@ -17,18 +18,36 @@ void add_patient_queue(LIST *list, QUEUE *queue){
 
     printf("\n");
 
-    printf("Digite o id do paciente: ");
-    int id;
-    scanf("%d", &id);
+    printf("Digite o nome do paciente: ");
+    flush();
+    char name[100];
+    fgets(name, 100, stdin);
+    name[strcspn(name, "\n")] = '\0';
 
-    PATIENT *patient = get_patient_by_id(list, id);
+    PATIENT *patient = get_patient_by_name(list, name);
 
     if(patient == NULL){
-        printf("Paciente não encontrado\n");
-        return;
+        PATIENT *patient = init_patient();
+        set_patient_name(patient, name);
+
+        PATIENT *last = get_last(list);
+
+        if(last == NULL){
+            set_patient_id(patient, 1);
+        } else {
+            set_patient_id(patient, get_patient_id(last) + 1);
+        }
+
+        un_hospitalize(patient);
+
+        add_patient(list, patient);
     }
 
-    enqueue(queue, patient);
+    printf("Indique o nível de urgência: ");
+    int level;
+    scanf("%d", &level);
+
+    enqueue(queue, patient, level);
 }
 
 void call_patient_queue(LIST *list, QUEUE *queue){
@@ -36,12 +55,6 @@ void call_patient_queue(LIST *list, QUEUE *queue){
         printf("Sem pacientes na fila.\n");
         return;
     }
-
-    printf("\n==============================\n");
-    printf("  CHAMAR PACIENTE - FILA\n");
-    printf("==============================\n");
-
-    printf("\n");
 
     PATIENT *patient = dequeue(queue);
 
