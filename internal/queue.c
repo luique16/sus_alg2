@@ -26,8 +26,13 @@ void add_patient_queue(LIST *list, QUEUE *queue){
 
     PATIENT *patient = get_patient_by_name(list, name);
 
+    if(patient != NULL && is_patient_in_queue(queue, get_patient_id(patient))) {
+        printf("Paciente já na fila.\n");
+        return;
+    }
+
     if(patient == NULL){
-        PATIENT *patient = init_patient();
+        patient = init_patient();
         set_patient_name(patient, name);
 
         PATIENT *last = get_last(list);

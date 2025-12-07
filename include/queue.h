@@ -9,6 +9,7 @@
     bool enqueue(QUEUE *queue, PATIENT *patient, int level);
     PATIENT* dequeue(QUEUE *queue);
     int get_next_level(QUEUE *queue);
+    bool is_patient_in_queue(QUEUE *queue, int id);
     void delete_queue(QUEUE **queue);
     void print_queue(QUEUE *queue);
     bool is_queue_empty(QUEUE *queue);

@@ -10,12 +10,10 @@ typedef struct _node {
     PATIENT *patient;
     int level;
     struct _node *next;
-    struct _node *prev;
 } NODE;
 
 typedef struct _queue {
     NODE *head;
-    NODE *tail;
     int size;
 } QUEUE;
 
@@ -23,7 +21,6 @@ QUEUE* init_queue(){
     QUEUE *queue = (QUEUE*) calloc(1, sizeof(QUEUE));
     queue->size = 0;
     queue->head = NULL;
-    queue->tail = NULL;
 
     return queue;
 }
@@ -33,30 +30,59 @@ bool is_queue_empty(QUEUE *queue){
 }
 
 bool enqueue(QUEUE *queue, PATIENT *patient, int level){
-    if(queue == NULL || queue->size >= DEFAULT_MAX_SIZE){
+    if (queue == NULL || queue->size >= DEFAULT_MAX_SIZE) {
         return false;
     }
 
-    NODE *n = (NODE*) calloc(1, sizeof(NODE));
+    NODE *n = calloc(1, sizeof(NODE));
+    if (!n) return false;
     n->patient = patient;
     n->level = level;
     n->next = NULL;
-    
-    if(is_queue_empty(queue)){
+
+    if (queue->head == NULL) {
         queue->head = n;
-        n->prev = NULL;
-    }else {
-        n->prev = queue->tail;
-        queue->tail->next = n;
+    } else if (level > queue->head->level) {
+        n->next = queue->head;
+        queue->head = n;
+    } else {
+        NODE *p = queue->head;
+        while (p->next != NULL && p->next->level >= level) {
+            p = p->next;
+        }
+
+        n->next = p->next;
+        p->next = n;
     }
-    queue->tail = n;
+
     queue->size += 1;
-    
     return true;
 }
 
 int get_queue_size(QUEUE *queue){
     return queue->size;
+}
+
+bool is_patient_in_queue(QUEUE *queue, int id){
+    if(is_queue_empty(queue)){
+        return false;
+    }
+
+    NODE *p = queue->head;
+
+    while(p != NULL){
+        if(p == NULL){
+            return false;
+        }
+
+        if(get_patient_id(p->patient) == id){
+            return true;
+        }
+
+        p = p->next;
+    }
+
+    return false;
 }
 
 PATIENT* dequeue(QUEUE *queue){
@@ -66,10 +92,6 @@ PATIENT* dequeue(QUEUE *queue){
     PATIENT *p = n->patient;
 
     queue->head = n->next;
-    if (queue->head != NULL)
-        queue->head->prev = NULL;
-    else
-        queue->tail = NULL;
 
     queue->size -= 1;
     free(n);
@@ -92,10 +114,12 @@ void print_queue(QUEUE *queue){
     }
 
     NODE *p = queue->head;
+    int i = 0;
 
-    for(int i = 0; i < queue->size; i++){
-        printf("[%d] %s\n", i + 1, get_patient_name(p->patient));
+    while(p != NULL){
+        printf("[%d] %s [nível %d]\n", i + 1, get_patient_name(p->patient), p->level);
         p = p->next;
+        i += 1;
         if(p == NULL){
             break;
         }
