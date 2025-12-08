@@ -81,7 +81,7 @@ bool set_patient_history(PATIENT *patient, HISTORY *history){
 }
 
 /*
-    @brief atribui o status de hospitalizado ao paciente
+    @brief atribui o status de internado ao paciente
     @param patient paciente
     @return
 */
@@ -90,7 +90,7 @@ void hospitalize(PATIENT *patient){
 }
 
 /*
-    @brief remove o status de hospitalizado ao paciente
+    @brief remove o status de internado ao paciente
     @param patient paciente
     @return
 */
@@ -99,7 +99,7 @@ void un_hospitalize(PATIENT *patient){
 }
 
 /*
-    @brief verifica se o paciente esta hospitalizado
+    @brief verifica se o paciente esta internado
     @param patient paciente
     @return true caso esteja, false caso contrario
 */

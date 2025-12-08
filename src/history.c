@@ -35,7 +35,7 @@ bool load_history(HISTORY *history, char *text) {
         if (procedures_count >= DEFAULT_MAX_SIZE)
             return false;
 
-        if (text[i] == ';' || text[i] == '\0') {
+        if (text[i] == ';' || text[i] == '\0') { // Procedimentos separados por ponto e virgula
             procedure[procedure_size] = '\0';
 
             if (procedure_size > 0) {
@@ -58,7 +58,7 @@ bool load_history(HISTORY *history, char *text) {
 }
 
 /*
-    @brief salva o historico
+    @brief transforma o historico em texto para ser salvo no arquivo
     @param history historico do paciente
     @return texto do historico
 */

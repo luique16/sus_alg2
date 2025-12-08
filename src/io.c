@@ -21,12 +21,25 @@ void skip_line(FILE *file) {
 }
 
 
-void flush(void){
+/*
+    @brief limpa a entrada padrao
+    @return
+*/
+void flush(){
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
+/*
+    @brief salva o estado atual do sistema
+    @param list lista de pacientes
+    @param queue fila de pacientes
+    @param list_filename nome do arquivo de lista
+    @param queue_filename nome do arquivo de fila
+    @return true caso salve, false caso contrario
+*/
 bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
+    // Salva fila
     FILE *queue_file = fopen(queue_filename, "w");
 
     if(is_queue_empty(queue)){
@@ -40,7 +53,7 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
             int level = get_next_level(queue);
             PATIENT *patient = dequeue(queue);
 
-            fprintf(queue_file, "\n  [%d, %d]", get_patient_id(patient), level);
+            fprintf(queue_file, "\n  [%d, %d]", get_patient_id(patient), level); // "tupla" de id e nivel de urgencia
 
             if (i < size - 1) {
                 fprintf(queue_file, ",");
@@ -53,6 +66,7 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
     fclose(queue_file);
 
 
+    // Salva lista
     FILE *list_file = fopen(list_filename, "w");
 
     if(is_list_empty(list)){
@@ -93,7 +107,7 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
 }
 
 bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename) {
-    // Load list
+    // Carrega lista
     FILE *list_file = fopen(list_filename, "r");
 
     if (list_file == NULL) {
@@ -159,7 +173,7 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
 
         for(int i = 0; i < strlen(line); i += 1) {
             if(line[i] == '}') {
-                if(line[i + 1] == ',') {
+                if(line[i + 1] == ',') { // verifica se o ultimo caractere da linha é vírgula para continuar
                     end = false;
                 }
                 break;
@@ -173,7 +187,7 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
 
     fclose(list_file);
 
-    // Load queue
+    // Carrega fila
     FILE *queue_file = fopen(queue_filename, "r");
 
     if (queue_file == NULL) {

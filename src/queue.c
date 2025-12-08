@@ -17,9 +17,11 @@ typedef struct _queue {
     int size;
 } QUEUE;
 
+// Fila de prioridade simplesmente encadeada e com limite de tamanho
+
 /*
     @brief inicia a fila
-    @return
+    @return fila criada
 */
 QUEUE* init_queue(){
     QUEUE *queue = (QUEUE*) calloc(1, sizeof(QUEUE));
@@ -30,9 +32,9 @@ QUEUE* init_queue(){
 }
 
 /*
-    @brief inicia a fila
+    @brief fila esta vazia
     @param queue fila de pacientes
-    @return
+    @return true se estiver vazia, false se nao estiver vazia
 */
 bool is_queue_empty(QUEUE *queue){
     return queue->size == 0;
@@ -57,12 +59,12 @@ bool enqueue(QUEUE *queue, PATIENT *patient, int level){
 
     if (queue->head == NULL) {
         queue->head = n;
-    } else if (level < queue->head->level) {
+    } else if (level < queue->head->level) { // Se o level for menor que o do primeiro elemento da fila
         n->next = queue->head;
         queue->head = n;
     } else {
         NODE *p = queue->head;
-        while (p->next != NULL && p->next->level <= level) {
+        while (p->next != NULL && p->next->level <= level) { // Procura o local para inserir o paciente
             p = p->next;
         }
 
@@ -166,7 +168,7 @@ void print_queue(QUEUE *queue){
 /*
     @brief busca se a fila esta cheia
     @param queue fila de pacientes
-    @return 1 para fila nao cheia, 0 para fila cheia
+    @return false para fila nao cheia, true para fila cheia
 */
 bool is_queue_full(QUEUE *queue){
     return queue->size >= DEFAULT_MAX_SIZE;
