@@ -12,10 +12,11 @@ typedef struct _node {
 
 typedef struct _list {
     NODE *head; //Head é o inicio da lista. Não há nó cabeça
+    NODE *tail; //Tail é o fim da lista.
     int size;
 } LIST;
 
-// Vamos fazer uma lista simplesmente encadeada e ordenada por inserção (id)
+// Lista simplesmente encadeada e ordenada por inserção (id)
 
 /*  
     @brief Inicia a lista
@@ -24,6 +25,7 @@ typedef struct _list {
 LIST* init_list(){
     LIST* l = (LIST *) calloc(1, sizeof(LIST));
     l->head = NULL;
+    l->tail = NULL;
     l->size = 0;
 
     return l;
@@ -47,7 +49,7 @@ int get_list_size(LIST *list){
     return list->size;
 }
 
-/*  
+/*
     @brief adiciona paciente na lista
     @param list lista de pacientes
     @param patient paciente a ser adicionado
@@ -61,17 +63,14 @@ void add_patient(LIST *list, PATIENT *patient){
     if (is_list_empty(list) == true) {
         list->head = n;
     } else {
-        NODE *p = list->head;
-        while (p->next != NULL) {
-            p = p->next;
-        }
-        p->next = n;
+        list->tail->next = n;
     }
 
+    list->tail = n; // Novo paciente é o último elemento da lista
     list->size += 1;
 }
 
-/*  
+/*
     @brief busca um paciente por id
     @param list lista de pacientes
     @param patient_id id do paciente a ser encontrado
@@ -80,12 +79,8 @@ void add_patient(LIST *list, PATIENT *patient){
 PATIENT* get_patient_by_id(LIST *list, int patient_id){
     NODE *p = list->head;
 
-    for(int i = 0; i < list->size; i++){
-        if(p == NULL){
-            return NULL;
-        }
-
-        if(get_patient_id(p->patient) == patient_id){
+    while (p != NULL) {
+        if (get_patient_id(p->patient) == patient_id) {
             return p->patient;
         }
 
@@ -104,11 +99,7 @@ PATIENT* get_patient_by_id(LIST *list, int patient_id){
 PATIENT* get_patient_by_name(LIST *list, char *name){
     NODE *p = list->head;
 
-    for(int i = 0; i < list->size; i++){
-        if(p == NULL){
-            return NULL;
-        }
-
+    while(p != NULL){
         if(strcmp(get_patient_name(p->patient), name) == 0){
             return p->patient;
         }
@@ -128,16 +119,20 @@ PATIENT* get_patient_by_name(LIST *list, char *name){
 void remove_patient(LIST *list, int patient_id){
     NODE* p = list->head;
 
-    if (p == NULL) {
+    if (p == NULL) { // Lista vazia
         return;
-    } else if (get_patient_id(p->patient) == patient_id) { 
+    } else if (get_patient_id(p->patient) == patient_id) {  // Primeiro elemento da lista
         list->head = p->next;
         delete_patient(&(p->patient));
         free(p);
+        if (list->tail == p) { // É também o último elemento da lista
+            list->tail = NULL;
+        }
         list->size -= 1;
         return;
     }
 
+    // Procura o elemento a ser removido
     while (p->next != NULL) {
         if(get_patient_id(p->next->patient) == patient_id){
             break;
@@ -155,6 +150,10 @@ void remove_patient(LIST *list, int patient_id){
 
     delete_patient(&(to_remove->patient));
     free(to_remove);
+
+    if (list->tail == to_remove) { // Altera o tail se for o último elemento da lista
+        list->tail = p;
+    }
 
     list->size -= 1;
 }
@@ -182,12 +181,7 @@ PATIENT* get_last(LIST *list){
         return NULL;
     }
 
-    NODE *p = list->head;
-    while (p->next != NULL) {
-        p = p->next;
-    }
-
-    return p->patient;
+    return list->tail->patient;
 }
 
 /*  
