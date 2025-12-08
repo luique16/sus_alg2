@@ -66,7 +66,7 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
             fprintf(list_file, "\n  {\n");
             fprintf(list_file, "    \"id\": %d,\n", get_patient_id(patient));
             fprintf(list_file, "    \"name\": \"%s\",\n", name);
-            fprintf(list_file, "    \"history\": \"%s\"\n", history);
+            fprintf(list_file, "    \"history\": \"%s\",\n", history);
             fprintf(list_file, "    \"hospitalized\": %d\n", hospitalized);
             fprintf(list_file, "  }");
 
@@ -112,7 +112,7 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
         char history_text[MAX_LINE_SIZE];
         int hospitalized;
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             char field[20];
 
             fgets(line, MAX_LINE_SIZE, list_file);
