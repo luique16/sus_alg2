@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../include/io.h"
 #include "../include/list.h"
 #include "../include/queue.h"
 #include "../include/patient.h"
+#include "../include/history.h"
 
 #define MAX_LINE_SIZE 1000
 
@@ -58,11 +60,13 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
             PATIENT *patient = get_patient_by_id(list, id);
 
             char* name = get_patient_name(patient);
+            char* history = save_history(get_patient_history(patient));
             bool hospitalized = is_hospitalized(patient);
 
             fprintf(list_file, "\n  {\n");
             fprintf(list_file, "    \"id\": %d,\n", get_patient_id(patient));
             fprintf(list_file, "    \"name\": \"%s\",\n", name);
+            fprintf(list_file, "    \"history\": \"%s\"\n", history);
             fprintf(list_file, "    \"hospitalized\": %d\n", hospitalized);
             fprintf(list_file, "  }");
 
@@ -70,6 +74,7 @@ bool save(LIST *list, QUEUE *queue, char *list_filename, char *queue_filename) {
                 fprintf(list_file, ",");
             }
 
+            free(history);
             remove_patient(list, id);
         }
 
@@ -104,7 +109,7 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
 
         int id;
         char name[MAX_LINE_SIZE];
-        char history[MAX_LINE_SIZE];
+        char history_text[MAX_LINE_SIZE];
         int hospitalized;
 
         for (int i = 0; i < 3; i++) {
@@ -117,17 +122,24 @@ bool load(LIST **list, QUEUE **queue, char *list_filename, char *queue_filename)
                 sscanf(line, "  \"id\": %d,", &id);
             } else if (strcmp(field, "name") == 0) {
                 sscanf(line, "  \"name\": \"%[^\"]\",", name);
-            } else if (strcmp(field, "hospitalized") == 0) {
-                int empty = sscanf(line, "  \"hospitalized\": %d,", &hospitalized);
+            } else if (strcmp(field, "history") == 0) {
+                int empty = sscanf(line, "  \"history\": \"%[^\"]\",", history_text);
                 if (empty == 0) {
-                    history[0] = '\0';
+                    history_text[0] = '\0';
                 }
+            } else if (strcmp(field, "hospitalized") == 0) {
+                sscanf(line, "  \"hospitalized\": %d", &hospitalized);
             }
         }
+        
+        HISTORY *history = init_history();
+        load_history(history, history_text);
 
         PATIENT *patient = init_patient();
+        set_patient_history(patient, history);
         set_patient_id(patient, id);
         set_patient_name(patient, name);
+
         if (hospitalized == 1) {
             hospitalize(patient);
         } else {

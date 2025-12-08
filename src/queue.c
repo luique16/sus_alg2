@@ -71,10 +71,6 @@ bool is_patient_in_queue(QUEUE *queue, int id){
     NODE *p = queue->head;
 
     while(p != NULL){
-        if(p == NULL){
-            return false;
-        }
-
         if(get_patient_id(p->patient) == id){
             return true;
         }

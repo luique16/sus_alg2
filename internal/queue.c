@@ -43,7 +43,9 @@ void add_patient_queue(LIST *list, QUEUE *queue){
             set_patient_id(patient, get_patient_id(last) + 1);
         }
 
-        un_hospitalize(patient);
+
+        HISTORY *history = init_history();
+        set_patient_history(patient, history);
 
         add_patient(list, patient);
     }

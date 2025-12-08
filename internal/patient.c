@@ -2,6 +2,40 @@
 #include <string.h>
 
 #include "../include/patient.h"
+#include "../include/io.h"
+
+void add_procedure(PATIENT *patient) {
+    if(is_history_full(get_patient_history(patient))){
+        printf("\nHistórico cheio\n");
+        return;
+    }
+
+    printf("Escreva o procedimento: ");
+
+    flush();
+
+    char procedure[100];
+    fgets(procedure, 100, stdin);
+    procedure[strcspn(procedure, "\n")] = '\0';
+
+    add_procedure_to_history(get_patient_history(patient), procedure);
+}
+
+void remove_procedure(PATIENT *patient) {
+    if(is_history_empty(get_patient_history(patient))){
+        printf("\nHistórico vazio\n");
+        return;
+    }
+
+    pop_last_procedure(get_patient_history(patient));
+}
+
+void print(PATIENT *patient){
+    printf("\nHistórico:\n");
+
+    print_history(get_patient_history(patient));
+}
+
 
 void change_status(PATIENT *patient){
     if (patient == NULL) {
@@ -35,7 +69,10 @@ void user_menu(PATIENT *patient){
 
         printf("\n");
 
-        printf("[1] Alterar status\n");
+        printf("[1] Mostrar histórico\n");
+        printf("[2] Adicionar procedimento\n");
+        printf("[3] Remover procedimento\n");
+        printf("[4] Alterar status\n");
         printf("[0] Voltar\n");
 
         printf("Selecione uma opção: ");
@@ -45,6 +82,15 @@ void user_menu(PATIENT *patient){
 
         switch(option){
             case 1:
+                print(patient);
+                continue;
+            case 2:
+                add_procedure(patient);
+                continue;
+            case 3:
+                remove_procedure(patient);
+                continue;
+            case 4:
                 change_status(patient);
                 continue;
             case 0:
