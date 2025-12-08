@@ -19,6 +19,12 @@ HISTORY* init_history(){
     return history;
 }
 
+/*
+    @brief carrega o historico
+    @param history historico do paciente
+    @param text texto do historico
+    @return true para carregamento feito, false para algum erro
+*/
 bool load_history(HISTORY *history, char *text) {
     int procedures_count = 0;
     int procedure_size = 0;
@@ -51,7 +57,11 @@ bool load_history(HISTORY *history, char *text) {
     return true;
 }
 
-
+/*
+    @brief salva o historico
+    @param history historico do paciente
+    @return texto do historico
+*/
 char* save_history(HISTORY *history) {
     char* text = calloc(DEFAULT_MAX_SIZE * (DEFAULT_MAX_SIZE_TEXT + 1), sizeof(char));
 
@@ -69,14 +79,30 @@ char* save_history(HISTORY *history) {
     return text;
 }
 
+/*
+    @brief verifica se o historico esta vazio
+    @param history historico do paciente
+    @return true caso esteja vazio, false caso nao esteja vazio
+*/
 bool is_history_empty(HISTORY *history){
     return history->size == 0;
 }
 
+/*
+    @brief salva o historico
+    @param history historico do paciente
+    @return true caso esteja vazio, false caso nao esteja vazio
+*/
 bool is_history_full(HISTORY *history){
     return history->size >= DEFAULT_MAX_SIZE;
 }
 
+/*
+    @brief adiciona procedimento ao historico
+    @param history historico do paciente
+    @param procedure procedimento a ser adicionado no historico
+    @return 
+*/
 void add_procedure_to_history(HISTORY *history, char *procedure){
     char* procedure_copy = (char*) malloc(sizeof(char) * DEFAULT_MAX_SIZE_TEXT);
 
@@ -91,6 +117,11 @@ void add_procedure_to_history(HISTORY *history, char *procedure){
     history->size++;
 }
 
+/*
+    @brief procura o ultimo procedimento
+    @param history historico do paciente
+    @return texto do ultimo procedimento
+*/
 char* get_last_procedure(HISTORY *history){
     if(history == NULL || is_history_empty(history)){
         return NULL;
@@ -99,6 +130,11 @@ char* get_last_procedure(HISTORY *history){
     return history->procedures[history->size - 1];
 }
 
+/*
+    @brief exclui o ultimo procedimento
+    @param history historico do paciente
+    @return
+*/
 void pop_last_procedure(HISTORY *history){
     if(history == NULL || is_history_empty(history)){
         return;
@@ -111,6 +147,11 @@ void pop_last_procedure(HISTORY *history){
     history->size--;
 }
 
+/*
+    @brief deleta o historico completo
+    @param history historico do paciente
+    @return true caso funcione, false caso contrario
+*/
 bool delete_history(HISTORY **history) {
     if(*history == NULL){
         return false;
@@ -126,6 +167,11 @@ bool delete_history(HISTORY **history) {
     return true;
 }
 
+/*
+    @brief printa o historico
+    @param history historico do paciente
+    @return
+*/
 void print_history(HISTORY *history){
     if(history == NULL){
         return;

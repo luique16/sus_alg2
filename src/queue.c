@@ -17,6 +17,10 @@ typedef struct _queue {
     int size;
 } QUEUE;
 
+/*
+    @brief inicia a fila
+    @return
+*/
 QUEUE* init_queue(){
     QUEUE *queue = (QUEUE*) calloc(1, sizeof(QUEUE));
     queue->size = 0;
@@ -25,11 +29,22 @@ QUEUE* init_queue(){
     return queue;
 }
 
+/*
+    @brief inicia a fila
+    @param queue fila de pacientes
+    @return
+*/
 bool is_queue_empty(QUEUE *queue){
     return queue->size == 0;
 }
 
-bool enqueue(QUEUE *queue, PATIENT *patient, int level){    //A insercao e feita ordenadamente de acordo com a prioridade (level)
+/*
+    @brief insercao ordenada com base no level do paciente
+    @param queue fila de pacientes
+    @param level nivel de prioridade
+    @return true se inseriu, false se houve erro
+*/
+bool enqueue(QUEUE *queue, PATIENT *patient, int level){
     if (queue == NULL || queue->size >= DEFAULT_MAX_SIZE) {
         return false;
     }
@@ -59,10 +74,21 @@ bool enqueue(QUEUE *queue, PATIENT *patient, int level){    //A insercao e feita
     return true;
 }
 
+/*
+    @brief busca o tamanho da fila
+    @param queue fila de pacientes
+    @return tamanho da fila
+*/
 int get_queue_size(QUEUE *queue){
     return queue->size;
 }
 
+/*
+    @brief Busca se um paciente esta na fila
+    @param queue fila de pacientes
+    @param id id do paciente a ser buscado
+    @return true se o paciente esta na fila, false caso contrario
+*/
 bool is_patient_in_queue(QUEUE *queue, int id){ //busca sequencial
     if(is_queue_empty(queue)){
         return false;
@@ -81,6 +107,11 @@ bool is_patient_in_queue(QUEUE *queue, int id){ //busca sequencial
     return false;
 }
 
+/*
+    @brief tira um paciente da fila
+    @param queue fila de pacientes
+    @return ponteiro para o paciente removido
+*/
 PATIENT* dequeue(QUEUE *queue){
     if (queue == NULL || queue->head == NULL) return NULL;
 
@@ -95,6 +126,11 @@ PATIENT* dequeue(QUEUE *queue){
     return p;
 }
 
+/*
+    @brief busca o level da primeira pessoa na fila
+    @param queue fila de pacientes
+    @return level do primeiro da fila
+*/
 int get_next_level(QUEUE *queue){
     if(is_queue_empty(queue) || queue->head == NULL){
         return 0;
@@ -103,6 +139,11 @@ int get_next_level(QUEUE *queue){
     return queue->head->level;
 }
  
+/*
+    @brief printa a fila
+    @param queue fila de pacientes
+    @return
+*/
 void print_queue(QUEUE *queue){
     if(is_queue_empty(queue)) {
         printf("(Sem pacientes na fila)\n");
@@ -122,10 +163,20 @@ void print_queue(QUEUE *queue){
     }
 }
 
+/*
+    @brief busca se a fila esta cheia
+    @param queue fila de pacientes
+    @return 1 para fila nao cheia, 0 para fila cheia
+*/
 bool is_queue_full(QUEUE *queue){
     return queue->size >= DEFAULT_MAX_SIZE;
 }
 
+/*
+    @brief deleta a fila
+    @param queue fila de pacientes
+    @return
+*/
 void delete_queue(QUEUE **queue){
     if (queue == NULL || *queue == NULL) return;
 
