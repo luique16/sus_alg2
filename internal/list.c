@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "../include/list.h"
+#include "../include/queue.h"
 #include "../include/io.h"
 
 void add_patient_list(LIST *list){
@@ -34,7 +35,7 @@ void add_patient_list(LIST *list){
     add_patient(list, patient);
 }
 
-void remove_patient_list(LIST *list){
+void remove_patient_list(LIST *list, QUEUE *queue){
     printf("\n==============================\n");
     printf(" REMOVA PACIENTE - CADASTRO  \n");
     printf("==============================\n");
@@ -46,8 +47,13 @@ void remove_patient_list(LIST *list){
     scanf("%d", &id);
 
     PATIENT *patient = get_patient_by_id(list, id);
-    if(patient == NULL){
+    if (patient == NULL){
         printf("Paciente não encontrado\n");
+        return;
+    }
+
+    if (is_patient_in_queue(queue, get_patient_id(patient))){
+        printf("Paciente está na fila de espera\n");
         return;
     }
 
@@ -111,7 +117,7 @@ void search_patient_by_id_list(LIST *list){
     printf("Status: %s\n", is_hospitalized(patient) ? "Internado" : "Externo");
 }
 
-void list_menu(LIST *list){
+void list_menu(LIST *list, QUEUE *queue){
     while(true) {
         printf("\n==============================\n");
         printf("    CADASTRO GERAL - LISTA    \n");
@@ -136,7 +142,7 @@ void list_menu(LIST *list){
                 add_patient_list(list);
                 continue;
             case 2:
-                remove_patient_list(list);
+                remove_patient_list(list, queue);
                 continue;
             case 3:
                 list_patients_list(list);

@@ -8,21 +8,18 @@
 typedef struct _node {
     PATIENT *patient;
     struct _node *next;
-    struct _node *prev;
 } NODE;
 
 typedef struct _list {
     NODE *head;
-    NODE *end;
     int size;
 } LIST;
 
-// Vamos fazer uma lista duplamente encadeada e nao ordenada
+// Vamos fazer uma lista simplesmente encadeada e ordenada por inserção (id)
 
 LIST* init_list(){
     LIST* l = (LIST *) calloc(1, sizeof(LIST));
     l->head = NULL;
-    l->end = NULL;
     l->size = 0;
 
     return l;
@@ -30,11 +27,7 @@ LIST* init_list(){
 
 
 bool is_list_empty(LIST *list){
-    if(list->size != 0){
-        return false;
-    }else{
-        return true;
-    }
+    return list->size == 0;
 }
 
 int get_list_size(LIST *list){
@@ -46,15 +39,15 @@ void add_patient(LIST *list, PATIENT *patient){
     n->next = NULL;
     n->patient = patient;
 
-    if(is_list_empty(list) == true){
+    if (is_list_empty(list) == true) {
         list->head = n;
-        n->prev = NULL;
-    }else {
-        list->end->next = n;
-        n->prev = list->end;
+    } else {
+        NODE *p = list->head;
+        while (p->next != NULL) {
+            p = p->next;
+        }
+        p->next = n;
     }
-
-    list->end = n;
 
     list->size += 1;
 }
@@ -98,33 +91,35 @@ PATIENT* get_patient_by_name(LIST *list, char *name){
 void remove_patient(LIST *list, int patient_id){
     NODE* p = list->head;
 
-    for(int i = 0; i < list->size; i++){
-        if(p == NULL){
-            return;
-        }
+    if (p == NULL) {
+        return;
+    } else if (get_patient_id(p->patient) == patient_id) { 
+        list->head = p->next;
+        delete_patient(&(p->patient));
+        free(p);
+        list->size -= 1;
+        return;
+    }
 
-        if(get_patient_id(p->patient) == patient_id){
+    while (p->next != NULL) {
+        if(get_patient_id(p->next->patient) == patient_id){
             break;
         }
 
         p = p->next;
     }
 
-    if (p->prev)
-        p->prev->next = p->next;
-    else
-        list->head = p->next;
+    if (p->next == NULL) {
+        return;
+    }
 
-    if (p->next)
-        p->next->prev = p->prev;
-    else
-        list->end = p->prev;
+    NODE* to_remove = p->next;
+    p->next = to_remove->next;
+
+    delete_patient(&(to_remove->patient));
+    free(to_remove);
 
     list->size -= 1;
-
-    delete_patient(&(p->patient));
-
-    free(p);
 }
 
 PATIENT* get_first(LIST *list){
@@ -140,7 +135,12 @@ PATIENT* get_last(LIST *list){
         return NULL;
     }
 
-    return list->end->patient;
+    NODE *p = list->head;
+    while (p->next != NULL) {
+        p = p->next;
+    }
+
+    return p->patient;
 }
 
 void print_list(LIST *list){

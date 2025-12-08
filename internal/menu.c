@@ -28,7 +28,7 @@ int menu() {
 bool handle_menu_option(int option, LIST *list, QUEUE *queue){
     switch(option){
         case 1:
-            list_menu(list);
+            list_menu(list, queue);
             return true;
         case 2:
             queue_menu(list, queue);
