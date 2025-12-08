@@ -10,10 +10,16 @@
 
 #define MAX_LINE_SIZE 1000
 
+/*
+    @brief pula uma linha
+    @param file arquivo do historico
+    @return
+*/
 void skip_line(FILE *file) {
     char line[MAX_LINE_SIZE];
     fgets(line, MAX_LINE_SIZE, file);
 }
+
 
 void flush(void){
     int c;
