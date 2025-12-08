@@ -42,12 +42,12 @@ bool enqueue(QUEUE *queue, PATIENT *patient, int level){
 
     if (queue->head == NULL) {
         queue->head = n;
-    } else if (level > queue->head->level) {
+    } else if (level < queue->head->level) {
         n->next = queue->head;
         queue->head = n;
     } else {
         NODE *p = queue->head;
-        while (p->next != NULL && p->next->level >= level) {
+        while (p->next != NULL && p->next->level <= level) {
             p = p->next;
         }
 
