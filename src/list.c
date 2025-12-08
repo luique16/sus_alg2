@@ -11,12 +11,16 @@ typedef struct _node {
 } NODE;
 
 typedef struct _list {
-    NODE *head;
+    NODE *head; //Head é o inicio da lista. Não há nó cabeça
     int size;
 } LIST;
 
 // Vamos fazer uma lista simplesmente encadeada e ordenada por inserção (id)
 
+/*  
+    @brief Inicia a lista
+    @return Ponteiro para a lista
+*/
 LIST* init_list(){
     LIST* l = (LIST *) calloc(1, sizeof(LIST));
     l->head = NULL;
@@ -25,15 +29,30 @@ LIST* init_list(){
     return l;
 }
 
-
+/*  
+    @brief verifica se a lista esta vazia
+    @param list lista de pacientes
+    @return 1 se estiver vazia ou 0 se não estiver vazia
+*/
 bool is_list_empty(LIST *list){
     return list->size == 0;
 }
 
+/*  
+    @brief busca o tamanho da lista
+    @param list lista de pacientes
+    @return Tamanho da lista
+*/
 int get_list_size(LIST *list){
     return list->size;
 }
 
+/*  
+    @brief adiciona paciente na lista
+    @param list lista de pacientes
+    @param patient paciente a ser adicionado
+    @return 
+*/
 void add_patient(LIST *list, PATIENT *patient){
     NODE *n = (NODE*) calloc(1, sizeof(NODE));
     n->next = NULL;
@@ -52,6 +71,12 @@ void add_patient(LIST *list, PATIENT *patient){
     list->size += 1;
 }
 
+/*  
+    @brief busca um paciente por id
+    @param list lista de pacientes
+    @param patient_id id do paciente a ser encontrado
+    @return ponteiro para o paciente, caso esteja na lista, ou NULL, caso contrario
+*/
 PATIENT* get_patient_by_id(LIST *list, int patient_id){
     NODE *p = list->head;
 
@@ -70,6 +95,12 @@ PATIENT* get_patient_by_id(LIST *list, int patient_id){
     return NULL;
 }
 
+/*  
+    @brief Busca o paciente pelo nome
+    @param list lista de pacientes
+    @param name nome do paciente a buscar
+    @return ponteiro para o paciente
+*/
 PATIENT* get_patient_by_name(LIST *list, char *name){
     NODE *p = list->head;
 
@@ -88,6 +119,12 @@ PATIENT* get_patient_by_name(LIST *list, char *name){
     return NULL;
 }
 
+/*  
+    @brief remove paciente da lista
+    @param list lista de pacientes
+    @param patient_id id do paciente
+    @return 
+*/
 void remove_patient(LIST *list, int patient_id){
     NODE* p = list->head;
 
@@ -122,6 +159,11 @@ void remove_patient(LIST *list, int patient_id){
     list->size -= 1;
 }
 
+/*  
+    @brief Pega o primeiro paciente da lista
+    @param list lista de pacientes
+    @return Ponteiro para o primeiro paciente
+*/
 PATIENT* get_first(LIST *list){
     if(is_list_empty(list)){
         return NULL;
@@ -130,6 +172,11 @@ PATIENT* get_first(LIST *list){
     return list->head->patient;
 }
 
+/*  
+    @brief Pega o ultimo paciente da lista
+    @param list lista de pacientes
+    @return Ponteiro para o ultimo paciente
+*/
 PATIENT* get_last(LIST *list){
     if(is_list_empty(list)){
         return NULL;
@@ -143,6 +190,11 @@ PATIENT* get_last(LIST *list){
     return p->patient;
 }
 
+/*  
+    @brief Printa a lista
+    @param list lista de pacientes
+    @return
+*/
 void print_list(LIST *list){
     NODE *p = list->head;
 
@@ -157,6 +209,11 @@ void print_list(LIST *list){
     }
 }
 
+/*  
+    @brief deleta a lista
+    @param list lista de pacientes
+    @return true caso a operacao funcione
+*/
 bool delete_list(LIST **list){
     NODE *curr = (*list)->head;
 

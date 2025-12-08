@@ -29,7 +29,7 @@ bool is_queue_empty(QUEUE *queue){
     return queue->size == 0;
 }
 
-bool enqueue(QUEUE *queue, PATIENT *patient, int level){
+bool enqueue(QUEUE *queue, PATIENT *patient, int level){    //A insercao e feita ordenadamente de acordo com a prioridade (level)
     if (queue == NULL || queue->size >= DEFAULT_MAX_SIZE) {
         return false;
     }
@@ -63,7 +63,7 @@ int get_queue_size(QUEUE *queue){
     return queue->size;
 }
 
-bool is_patient_in_queue(QUEUE *queue, int id){
+bool is_patient_in_queue(QUEUE *queue, int id){ //busca sequencial
     if(is_queue_empty(queue)){
         return false;
     }
